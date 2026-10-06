@@ -28,33 +28,36 @@ moved or $5,000 per landed kg, a few percent of the cost of landing it.
   environment, run seeds in background workers, compare the four rules on the same seeds, replay a simulated year on
   the base map, run the verification checks, export CSV or scenario JSON.
 - **Command line:** `pip install -e .` then `lunarsim run --scenario P2-4-vehicles --mechanism marketplace --seeds 30`,
-  `lunarsim compare --scenario P2-default`, `lunarsim verify`, `lunarsim trace --out year.json`,
+  `lunarsim compare --scenario P2-default`, `lunarsim verify`, `lunarsim trace --seed 3 --out year.json`,
   `lunarsim scenarios export --dir data/scenarios`.
 
 ## What is here
 
 | Path | Contents |
 |---|---|
-| `lunarsim/` | The discrete-event simulator. `world.py` (nine-site base graph, Floyd-Warshall), `entities.py` (cargo, vehicle classes), `scenario.py` (demand, landers, bulk flows, environment, costs), `engine.py` (event loop, job pricing, metrics, trace export), `dispatch.py` (in-house, pooled greedy, batched Hungarian assignment, marketplace with bundling / consolidation / team lift / backhaul / night awareness / anticipatory staging, and ablation variants), `assign.py` (dependency-free Hungarian algorithm), `vv.py` (13 verification checks), `precision.py` (sequential replication to a target confidence-interval width). |
+| `lunarsim/` | The discrete-event simulator. `world.py` (nine-site base graph, Floyd-Warshall), `entities.py` (cargo, vehicle classes), `scenario.py` (demand, landers, bulk flows, environment, costs), `engine.py` (event loop, job pricing, metrics, trace export), `dispatch.py` (in-house, pooled greedy, batched Hungarian assignment, marketplace with bundling / consolidation / team lift / backhaul / night awareness / anticipatory staging, and ablation variants), `assign.py` (dependency-free Hungarian algorithm), `vv.py` (13 verification checks), `precision.py` (sequential replication to a target confidence-interval width), `config.py` (scenario JSON files and the scenario library), `cli.py` (the `lunarsim` command). |
 | `tests/test_verification.py` | pytest suite: the 13 verification checks plus determinism, invariants, Hungarian-vs-SciPy, team lift, trace export (19 tests). |
 | `experiments/scenarios.py` | Demand phases P1 (pre-2029), P2 (2029-2032), P3 (2032+). |
-| `experiments/run_all.py` | Experiment suites E1-E14; `run_e14_long.py` continues the precision run to a 1% half-width. |
+| `experiments/run_all.py` | Experiment suites E1-E14; `run_e14_long.py` continues the precision run to a 1% half-width (resumable); `export_datasets.py` writes `data/`. |
 | `experiments/make_figures.py` | All figures (`figures/`) and summary tables (`results/table_*.csv`), including the V&V table. |
-| `web/template.html`, `web/build_web.py` | The browser port of the simulator (single page, no dependencies); the build script embeds Python reference values for the cross-implementation check and writes `web/index.html`. |
+| `web/` | The browser port of the simulator: `sim.js` (the engine, a line-by-line port of `lunarsim`), `worker.js` (runs it off the main thread), `app.js` and `index.html` (the interface), `build_web.py` (writes `web/dist/` with `ref.js`, the Python reference values for the cross-implementation check). Deployed to GitHub Pages by `.github/workflows/pages.yml`. |
 | `paper/` | Paper source (`part1_front.html` ... `part4_back.html`, `style.css`), `build.py` (assembles `paper.html`, fills tables and settled numbers, prints the PDF with headless Chrome), PDFs, page previews. |
 | `notes/` | Research notes compiled before modelling: methods playbook, lunar logistics literature and sourced parameters, marketplace mechanisms and simulation design, demand / supply / competitor facts. Every number carries its URL and a confidence grade. |
-| `results/` | Raw per-seed results (`E*.csv`), the weight search (`E9_best.json`), precision runs (`E14_*.json`, `E14_precision_*.csv`), derived tables. |
+| `results/` | Raw per-seed results (`E*.csv`), the weight search (`E9_best.json`), precision runs (`E14_*.json`, `E14_precision_*.csv.gz`), derived tables; columns are documented in `results/README.md`. |
+| `data/` | Datasets: the sourced parameter table, the 2026-2032 mission manifest, cargo / lander / vehicle classes, the site graph, scenario JSON files, 30 synthetic manifest-years per phase, replayable sample traces, the capacity ladder and the verification table (`data/README.md`). |
+| `.github/workflows/` | `ci.yml` runs the tests and `lunarsim verify` on every push; `pages.yml` builds `web/dist/` and deploys the simulator to GitHub Pages. |
 
 ## Reproduce
 
 ```
 py -3 -m venv .venv
-.venv\Scripts\python -m pip install numpy scipy matplotlib pandas pymupdf pytest
+.venv\Scripts\python -m pip install -e ".[full]"         # numpy, pandas, scipy, matplotlib, pymupdf, pytest
 .venv\Scripts\python -m pytest tests -q                 # 19 tests, ~2 min (M/G/1 check is the slow one)
 .venv\Scripts\python experiments\run_all.py              # E1-E14, ~40 min on 10 cores; pass e1 e2 ... for a subset
-.venv\Scripts\python experiments\run_e14_long.py         # optional: precision run to 1% (about an hour)
+.venv\Scripts\python experiments\run_e14_long.py         # optional: precision run to 1% (hours; resumable)
+.venv\Scripts\python experiments\export_datasets.py      # data/ (parameters, manifests, scenarios, traces)
 .venv\Scripts\python experiments\make_figures.py         # figures/*.png and results/table_*.csv (add "vv" to run the checks)
-.venv\Scripts\python web\build_web.py                    # web/index.html with embedded Python reference values
+.venv\Scripts\python web\build_web.py                    # web/dist/ (index.html, app.js, sim.js, worker.js, ref.js)
 .venv\Scripts\python paper\build.py                      # paper/paper.html and the PDF (needs Chrome)
 ```
 
