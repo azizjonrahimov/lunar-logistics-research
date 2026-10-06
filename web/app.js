@@ -147,7 +147,7 @@ function barChart(svg, labels, means, cis, colors, unit, yMax) {
   labels.forEach((lab, i) => { const m = means[i]; const x = pad.l + bw * i + bw * 0.18, w = bw * 0.64;
     if (Number.isFinite(m)) { s += `<rect x="${x}" y="${y(m)}" width="${w}" height="${Math.max(0, y(0) - y(m))}" rx="3" fill="${colors[i % colors.length]}" data-tip="${lab}\n${fmtN(m, 2)} ± ${fmtN(cis[i], 2)} ${unit}"/>`; if (cis[i] > 0) { const cx = x + w / 2; s += `<line x1="${cx}" x2="${cx}" y1="${y(Math.max(0, m - cis[i]))}" y2="${y(m + cis[i])}" stroke="var(--ink2)" stroke-width="1.2"/><line x1="${cx - 4}" x2="${cx + 4}" y1="${y(m + cis[i])}" y2="${y(m + cis[i])}" stroke="var(--ink2)" stroke-width="1.2"/><line x1="${cx - 4}" x2="${cx + 4}" y1="${y(Math.max(0, m - cis[i]))}" y2="${y(Math.max(0, m - cis[i]))}" stroke="var(--ink2)" stroke-width="1.2"/>`; }
       s += `<text x="${x + w / 2}" y="${y(m) - 5}" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink)">${fmtN(m, dec)}</text>`; }
-    s += `<text x="${x + w / 2}" y="${H - pad.b + 15}" text-anchor="middle" font-size="10.5" fill="var(--ink2)">${lab.length > 13 ? lab.slice(0, 12) + '…' : lab}</text>`; });
+    s += `<text x="${x + w / 2}" y="${H - pad.b + 15}" text-anchor="middle" font-size="10.5" fill="var(--ink2)">${lab.length > Math.floor(bw / 6.5) ? lab.slice(0, Math.max(6, Math.floor(bw / 6.5) - 1)) + '…' : lab}</text>`; });
   s += `<text x="${pad.l}" y="${H - 6}" font-size="10" fill="var(--muted)">${unit}</text>`; svg.innerHTML = s; attachTips(svg);
 }
 function timelineChart(svg, tr) {
