@@ -718,18 +718,25 @@ def fig_precision():
     d = json.load(open(os.path.join(RES, "E14_precision.json")))
     p_long = os.path.join(RES, "E14_precision_long.json")
     if os.path.exists(p_long):
-        d.update(json.load(open(p_long)))   # extended runs replace the 4,000-replication runs where they exist
+        # extended runs replace the 4,000-replication runs where they exist; the first run's early history is kept
+        for mech, dd in json.load(open(p_long)).items():
+            for m, r in dd.items():
+                first = r["history"][0]["n"] if r["history"] else 0
+                early = [h for h in d.get(mech, {}).get(m, {}).get("history", []) if h["n"] < first]
+                r = dict(r); r["history"] = early + r["history"]
+                dd[m] = r
+            d[mech] = dd
     fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.2))
     fig.subplots_adjust(wspace=0.3)
     for ax, (m, title) in zip(axes, [("delay_prio1_mean_h", "A. Mean urgent delay"), ("delay_prio1_p90_h", "B. Urgent 90th-percentile delay")]):
         for mech in MECH_ORDER[:4]:
             h = d[mech][m]["history"]
-            ax.plot([r["n"] for r in h], [100 * r["rel"] for r in h], "-o", ms=3, lw=1.6, color=MECH_COLOR[mech], label=MECH_LABEL[mech])
+            ax.plot([r["n"] for r in h], [100 * r["rel"] for r in h], "-o", ms=3, lw=1.6, markevery=max(1, len(h) // 14), color=MECH_COLOR[mech], label=MECH_LABEL[mech])
         tgt = 100 * d["marketplace"][m]["target"]
         ax.axhline(tgt, color=MUTED, ls="--", lw=0.9)
-        ax.text(300, tgt * 1.12, f"target {tgt:.0f}%", fontsize=8, color=INK2, ha="center")
         ax.set_xscale("log")
         ax.set_yscale("log")
+        ax.text(ax.get_xlim()[0] * 1.3, tgt * 1.12, f"target {tgt:.0f}%", fontsize=8, color=INK2, ha="left", va="bottom")
         ax.set_xlabel("replications")
         ax.set_ylabel("99% CI half-width (% of mean)")
         ax.set_title(title, fontsize=10)
@@ -741,6 +748,32 @@ def fig_precision():
         for m, r in dd.items():
             rows.append({"mechanism": mech, "metric": m, "n": r["n"], "mean": r["mean"], "half_width_99": r["half_width"], "rel_half_width": r["rel_half_width"], "target": r["target"], "reached": r["reached"]})
     pd.DataFrame(rows).to_csv(os.path.join(RES, "table_E14.csv"), index=False)
+    # Paired differences on the seeds the settled cells share (common random numbers), 99% CIs.
+    try:
+        from scipy import stats
+        tq = lambda df: float(stats.t.ppf(0.995, df))
+    except ImportError:
+        tq = lambda df: 2.5758
+    cols = ["seed", "delay_prio1_mean_h", "delay_prio1_p90_h", "sl24_prio1"]
+    per = {}
+    for mech in MECH_ORDER[:4]:
+        for name in (f"E14_precision_{mech}.csv", f"E14_precision_{mech}.csv.gz"):
+            path = os.path.join(RES, name)
+            if os.path.exists(path):
+                per[mech] = pd.read_csv(path, usecols=cols).drop_duplicates("seed").set_index("seed").sort_index()
+                break
+    mechs = [m for m in MECH_ORDER[:4] if m in per]
+    prow = []
+    for i, a in enumerate(mechs):
+        for bm in mechs[i + 1:]:
+            common = per[a].index.intersection(per[bm].index)
+            for m in cols[1:]:
+                diff = (per[bm].loc[common, m] - per[a].loc[common, m]).dropna()
+                n = len(diff)
+                hw = tq(n - 1) * diff.std(ddof=1) / (n ** 0.5)
+                prow.append({"a": a, "b": bm, "metric": m, "n_common": n, "mean_diff_b_minus_a": diff.mean(),
+                             "half_width_99": hw, "distinguishable": bool(abs(diff.mean()) > hw)})
+    pd.DataFrame(prow).to_csv(os.path.join(RES, "table_E14_paired.csv"), index=False)
 
 
 # ---------------------------------------------------------------------------

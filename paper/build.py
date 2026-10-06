@@ -127,7 +127,7 @@ def table_e14():
     if reached:
         head = "all four cells" if len(reached) == 4 else "the " + join(low(m) for m in reached) + (" cells" if len(reached) > 1 else " cell")
         every = all(d[m][k]["reached"] for m in reached for k in d[m])
-        parts.append("An extended run without the cap continued " + head + " to the 1% target on the mean urgent delay, which was reached after "
+        parts.append("An extended run with the cap raised to 60,000 continued " + head + " to the 1% target on the mean urgent delay, which was reached after "
                      + join(f"{d[m]['delay_prio1_mean_h']['n']:,} ({low(m)})" for m in reached) + " replications"
                      + (", with every other metric inside its target at those counts." if every else "."))
     if not_reached:
@@ -137,6 +137,50 @@ def table_e14():
                      + ", ".join(f"{100*d[m]['delay_prio1_mean_h']['rel_half_width']:.1f}%" for m in not_reached)
                      + "; the repository script continues them on request.")
     return "\n".join(out), " ".join(parts)
+
+
+def _join(items):
+    items = list(items)
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def _low(m):
+    return MECH_LABEL[m].lower().replace(" (ours)", "")
+
+
+def paired_sentence():
+    """Paired 99% CIs of the differences between settled cells on the seeds they share (from table_E14_paired.csv)."""
+    path = os.path.join(RES, "table_E14_paired.csv")
+    if not os.path.exists(path):
+        return ""
+    t = pd.read_csv(path)
+    mlab = {"delay_prio1_mean_h": "the mean urgent delay", "delay_prio1_p90_h": "the 90th-percentile urgent delay", "sl24_prio1": "the same-day service level"}
+    sign = lambda x: "&minus;" if x < 0 else "+"
+    def cell(a, b, metric):
+        return t[(t.a == a) & (t.b == b) & (t.metric == metric)].iloc[0]
+    def fmt(a, b):
+        r1, r2, r3 = (cell(a, b, m) for m in ("delay_prio1_mean_h", "delay_prio1_p90_h", "sl24_prio1"))
+        return (f"{_low(b)} minus {_low(a)} is {sign(r1.mean_diff_b_minus_a)}{abs(r1.mean_diff_b_minus_a):.2f} &plusmn; {r1.half_width_99:.2f} h on the mean urgent delay, "
+                f"{sign(r2.mean_diff_b_minus_a)}{abs(r2.mean_diff_b_minus_a):.2f} &plusmn; {r2.half_width_99:.2f} h on its 90th percentile and "
+                f"{sign(r3.mean_diff_b_minus_a)}{abs(r3.mean_diff_b_minus_a):.3f} &plusmn; {r3.half_width_99:.3f} on the same-day service level")
+    pairs = [("pooled_greedy", "marketplace"), ("central_assign", "marketplace"), ("pooled_greedy", "central_assign"), ("inhouse", "marketplace")]
+    body = "; ".join(fmt(a, b) for a, b in pairs if ((t.a == a) & (t.b == b)).any())
+    n_common = int(t.n_common.min())
+    nd = t[~t.distinguishable]
+    if len(nd) == 0:
+        tail = f"Every one of the {len(t)} pairwise differences is distinguishable from zero."
+    else:
+        items = [f"{_low(r.b)} against {_low(r.a)} on {mlab[r.metric]}" for r in nd.itertuples()]
+        tail = (f"All but {len(nd)} of the {len(t)} pairwise differences are distinguishable from zero; the exception"
+                + (" is " if len(nd) == 1 else "s are ") + _join(items) + ".")
+    bg_mean = cell("pooled_greedy", "central_assign", "delay_prio1_mean_h"); bg_p90 = cell("pooled_greedy", "central_assign", "delay_prio1_p90_h")
+    batched = (" Batched assignment therefore trades a slightly higher mean than greedy dispatch for a shorter tail, which is what an hourly batch should do: it waits to match, then matches well."
+               if (bg_mean.distinguishable and bg_mean.mean_diff_b_minus_a > 0 and bg_p90.distinguishable and bg_p90.mean_diff_b_minus_a < 0) else "")
+    mg = cell("pooled_greedy", "marketplace", "delay_prio1_mean_h")
+    settled = ("The marketplace's advantage over greedy pooling, which the 30-seed cells left in doubt, is therefore settled."
+               if mg.distinguishable else "The marketplace's advantage over greedy pooling remains within the paired interval.")
+    return (f"Because every rule sees the same seeds, the paired differences on the {n_common:,} or more seeds that each pair of cells shares "
+            f"are far tighter than the cell intervals (99% CIs): {body}. {tail}{batched} {settled}")
 
 
 def settled_numbers():
@@ -156,7 +200,7 @@ def main():
     html = "\n".join(parts)
     t14, sent14 = table_e14()
     html = (html.replace("{{TABLE_MAIN}}", table_main()).replace("{{TABLE_ABL}}", table_abl())
-            .replace("{{TABLE_VV}}", table_vv()).replace("{{TABLE_E14}}", t14).replace("{{E14_LONG}}", sent14))
+            .replace("{{TABLE_VV}}", table_vv()).replace("{{TABLE_E14}}", t14).replace("{{E14_LONG}}", sent14).replace("{PAIRED_SENTENCE}", paired_sentence()))
     # abstract numbers
     e3 = pd.read_csv(os.path.join(RES, "E3_thickness.csv"))
     a = e3[(e3.other_duty == 0.3) & (e3.n_companies == 6) & (e3.mechanism == "inhouse")].sort_values("seed")

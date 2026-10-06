@@ -4,7 +4,7 @@
 [![simulator](https://github.com/azizjonrahimov/lunar-logistics-research/actions/workflows/pages.yml/badge.svg)](https://azizjonrahimov.github.io/lunar-logistics-research/)
 
 **Live simulator:** https://azizjonrahimov.github.io/lunar-logistics-research/
-**Paper (v2, 43 pages):** [`paper/lunar_logistics_marketplace_paper_v2.pdf`](paper/lunar_logistics_marketplace_paper_v2.pdf)
+**Paper (v2, 44 pages):** [`paper/lunar_logistics_marketplace_paper_v2.pdf`](paper/lunar_logistics_marketplace_paper_v2.pdf)
 
 ## In one paragraph
 
