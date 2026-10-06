@@ -1,9 +1,35 @@
-# Lunar surface logistics marketplace: verified testbed, experiments, paper and live simulator
+# LunarSim: lunar surface logistics testbed, marketplace mechanism, datasets and paper
 
-This folder holds everything behind the preprint **"Who Hauls the Habitat? A Verified Simulation Testbed, a
-Pooled Dispatch Marketplace and a Reference Design for Lunar Surface Logistics"** (version 2:
-`paper/lunar_logistics_marketplace_paper_v2.pdf`) and the browser simulator **LunarSim Live**
-(https://claude.ai/artifact/4b4NMcz74BxnqPn2epaZgL, source in `web/`).
+[![tests](https://github.com/azizjonrahimov/lunar-logistics-research/actions/workflows/ci.yml/badge.svg)](https://github.com/azizjonrahimov/lunar-logistics-research/actions/workflows/ci.yml)
+[![simulator](https://github.com/azizjonrahimov/lunar-logistics-research/actions/workflows/pages.yml/badge.svg)](https://azizjonrahimov.github.io/lunar-logistics-research/)
+
+**Live simulator:** https://azizjonrahimov.github.io/lunar-logistics-research/
+**Paper (v2, 43 pages):** [`paper/lunar_logistics_marketplace_paper_v2.pdf`](paper/lunar_logistics_marketplace_paper_v2.pdf)
+
+## In one paragraph
+
+NASA's Moon Base plan lands about 4 t of cargo at the lunar south pole before 2029, 60 t in 2029-2032 and 150 t
+after that, in items from 10 kg instruments to 15 t habitats, while the rovers under contract carry 0.8-1.6 t.
+NASA's 2026 architecture guide names "a marketplace for lunar logistics" as a goal without saying what one would do.
+LunarSim is a discrete-event model of cargo movement at a nine-site south-pole base (lander manifests, a fleet owned
+by several companies, the lunar night, Earth-Moon control latency, faults, other duties, regolith and return flows)
+with four dispatch rules: today's bilateral in-house contracting, pooled greedy dispatch, batched assignment, and a
+pooled marketplace (sequential auction with bundling, consolidation, team lifts, night awareness and anticipatory
+staging). Thirteen verification checks pass against analytic and published references; a browser port reproduces the
+Python results. Main findings: pooling helps only when the fleet is fragmented (the in-house penalty follows
+20/e hours in effective vehicles per owner); any pooled rule reaches a same-day service level with four vehicles at
+Phase-2 demand where in-house fleets do not with eight; 1.6 t rovers can move 40% of the Phase-2 manifest, two
+lifting together 55%, a 10 t hauler 88% and only 15 t of capacity all of it; a surface move costs about $300 per kg
+moved or $5,000 per landed kg, a few percent of the cost of landing it.
+
+## Try it
+
+- **Browser:** open the [live simulator](https://azizjonrahimov.github.io/lunar-logistics-research/). Build a fleet, set the
+  environment, run seeds in background workers, compare the four rules on the same seeds, replay a simulated year on
+  the base map, run the verification checks, export CSV or scenario JSON.
+- **Command line:** `pip install -e .` then `lunarsim run --scenario P2-4-vehicles --mechanism marketplace --seeds 30`,
+  `lunarsim compare --scenario P2-default`, `lunarsim verify`, `lunarsim trace --out year.json`,
+  `lunarsim scenarios export --dir data/scenarios`.
 
 ## What is here
 
