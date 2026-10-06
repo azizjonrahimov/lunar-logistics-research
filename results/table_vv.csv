@@ -1,0 +1,14 @@
+name,reference,simulated,tolerance,unit,basis,passed,rel_error
+Travel time on a flat two-edge path,0.3744226524463659,0.3744226524463659,1e-09,h,"distance / speed; path PAD_A-DEPOT-BASE, both edges flat",True,0.0
+Steep-edge travel time doubles,0.6782739531749361,0.6782739531749361,1e-09,h,slope class 'steep' halves speed,True,0.0
+Teleoperated speed at 0 s RTT,3.24,3.24,0.01,km/h,NASA JSC LTV teleoperation trial average speed,True,0.0
+Teleoperated speed at 4 s RTT,2.56,2.56,0.01,km/h,NASA JSC LTV teleoperation trial average speed,True,0.0
+Teleoperated speed at 6 s RTT,2.03,2.03,0.01,km/h,NASA JSC LTV teleoperation trial average speed,True,0.0
+Teleoperated speed at 8 s RTT,1.76,1.76,0.01,km/h,NASA JSC LTV teleoperation trial average speed,True,0.0
+Dark share of time,0.15,0.14999925000374997,0.005,fraction,night_fraction parameter; sampled over 10 cycles,True,4.99997500014171e-06
+Mass conservation (marketplace),334489.21171932644,334489.21171932644,1e-09,kg,ready mass = delivered + stranded + backlog at horizon,True,0.0
+Mass conservation (pooled_greedy),334489.21171932644,334489.21171932644,1e-09,kg,ready mass = delivered + stranded + backlog at horizon,True,0.0
+"Items above team capacity (2 x 1,500 kg) never delivered",0.0,0.0,0.0,items,"13 items heavier than 3,000 kg in six large landings",True,0.0
+Same landed manifest for every mechanism (seed 11),1.0,1.0,0.0,bool,demand drawn from a stream separate from operations,True,0.0
+Annual fleet amortisation,117.0,117.0,1e-09,$M,sum of unit cost / calendar life over the fleet,True,0.0
+M/G/1 mean queue wait (Pollaczek-Khinchine),0.21933976921169146,0.2182282650106286,0.05,h,"rho=0.190, lambda=2.47/day, E[S]=1.85 h, n=18117 items over 20 years",True,0.005067499637925213

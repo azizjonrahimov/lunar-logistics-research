@@ -1,0 +1,4 @@
+name,payload_min_kg,payload_max_kg,offload_min_h,offload_max_h,max_item_kg
+CLPS,100,500,6,24,500
+MK1,2000,3000,12,36,2000
+LARGE,12000,30000,24,72,15000

@@ -1,0 +1,132 @@
+{
+ "sites": [
+  {
+   "name": "PAD_A",
+   "x": 0.0,
+   "y": 0.0,
+   "kind": "pad"
+  },
+  {
+   "name": "PAD_B",
+   "x": 1.2,
+   "y": -0.9,
+   "kind": "pad"
+  },
+  {
+   "name": "DEPOT",
+   "x": 1.1,
+   "y": 0.7,
+   "kind": "depot"
+  },
+  {
+   "name": "BASE",
+   "x": 1.4,
+   "y": 1.0,
+   "kind": "base"
+  },
+  {
+   "name": "POWER",
+   "x": 1.9,
+   "y": 1.6,
+   "kind": "power"
+  },
+  {
+   "name": "CONSTR",
+   "x": 1.0,
+   "y": 1.5,
+   "kind": "construction"
+  },
+  {
+   "name": "ISRU",
+   "x": 2.6,
+   "y": 0.9,
+   "kind": "isru"
+  },
+  {
+   "name": "SCI_1",
+   "x": 3.2,
+   "y": 2.3,
+   "kind": "science"
+  },
+  {
+   "name": "PSR",
+   "x": 4.6,
+   "y": 3.0,
+   "kind": "psr"
+  }
+ ],
+ "edges": [
+  {
+   "a": "DEPOT",
+   "b": "PAD_A",
+   "dist": 1.6949926253526888,
+   "slope": "flat"
+  },
+  {
+   "a": "DEPOT",
+   "b": "PAD_B",
+   "dist": 2.0840585404445817,
+   "slope": "moderate"
+  },
+  {
+   "a": "PAD_A",
+   "b": "PAD_B",
+   "dist": 1.9500000000000002,
+   "slope": "flat"
+  },
+  {
+   "a": "BASE",
+   "b": "DEPOT",
+   "dist": 0.5515432893255069,
+   "slope": "flat"
+  },
+  {
+   "a": "BASE",
+   "b": "POWER",
+   "dist": 1.0153324578678653,
+   "slope": "moderate"
+  },
+  {
+   "a": "BASE",
+   "b": "CONSTR",
+   "dist": 0.8324061508662702,
+   "slope": "flat"
+  },
+  {
+   "a": "DEPOT",
+   "b": "ISRU",
+   "dist": 1.9672569735548022,
+   "slope": "moderate"
+  },
+  {
+   "a": "BASE",
+   "b": "ISRU",
+   "dist": 1.5654072952429985,
+   "slope": "moderate"
+  },
+  {
+   "a": "POWER",
+   "b": "SCI_1",
+   "dist": 1.9194269978303422,
+   "slope": "steep"
+  },
+  {
+   "a": "ISRU",
+   "b": "SCI_1",
+   "dist": 1.9801010075246162,
+   "slope": "moderate"
+  },
+  {
+   "a": "PSR",
+   "b": "SCI_1",
+   "dist": 2.034821859524808,
+   "slope": "steep"
+  },
+  {
+   "a": "ISRU",
+   "b": "PSR",
+   "dist": 3.77,
+   "slope": "steep"
+  }
+ ]
+}

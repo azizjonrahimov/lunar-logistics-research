@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use LunarSim or the results of this study, please cite the preprint."
+title: "Who Hauls the Habitat? A Verified Simulation Testbed, a Pooled Dispatch Marketplace and a Reference Design for Lunar Surface Logistics"
+authors:
+  - family-names: Rahimov
+    given-names: Azizjon
+    affiliation: Roatify Research
+version: 2.0.0
+date-released: 2026-10-06
+license: MIT
+repository-code: https://github.com/azizjonrahimov/lunar-logistics-research
+keywords:
+  - lunar surface logistics
+  - multi-robot task allocation
+  - auction mechanisms
+  - discrete-event simulation
+  - Artemis

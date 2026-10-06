@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+paper/preview/
+paper/paper.html
+web/dist/
+*.egg-info/
+build/
+dist/
+.DS_Store
+Thumbs.db
+results/E14_precision_*.csv

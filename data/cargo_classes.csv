@@ -1,0 +1,6 @@
+label,mass_min_kg,mass_max_kg,destination_weights,priority,item_share
+consumables,60,400,"{""BASE"": 0.8, ""DEPOT"": 0.2}",1,0.34
+science,10,150,"{""SCI_1"": 0.5, ""PSR"": 0.3, ""BASE"": 0.2}",2,0.2
+equipment,300,2000,"{""CONSTR"": 0.4, ""ISRU"": 0.3, ""POWER"": 0.2, ""BASE"": 0.1}",2,0.26
+infrastructure,2000,6000,"{""POWER"": 0.4, ""ISRU"": 0.3, ""CONSTR"": 0.3}",2,0.14
+element,6000,15000,"{""BASE"": 0.6, ""POWER"": 0.4}",3,0.06

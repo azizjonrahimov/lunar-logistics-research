@@ -1,0 +1,30 @@
+parameter,value_used,basis,confidence
+Phase landed mass,"~4,000 / ~60,000 / ~150,000 kg; 21 / 24 / 28 landings",NASA Moon Base Architecture User's Guide (Apr 2026) p.3,high
+Recurring logistics,"2,000-6,000 kg per crewed mission; 2,500-10,000 kg/yr",NASA Lunar Mobility Drivers and Needs (2024); Lunar Surface Cargo (2024),high
+Habitation-class elements,"12,000-15,000 kg",NASA ACR24 white papers,high
+Pad standoff; farthest site,">1,000 m; up to 5,000 m",Lunar Mobility Drivers and Needs (2024),high
+Slopes,up to 20 deg; >10 deg common,Lunar Mobility Drivers and Needs (2024),high
+Tortuosity factor,1.3,modelling choice,assumed
+LTV cargo capacity,"800 kg full / 1,600 kg reduced performance; 1,500 kg used","NASA ACR24; 2025 workshop slides; Astrolab FLEX 1,500-1,600 kg",high / med
+LTV speed,10 km/h design target; 6 km/h autonomous average used,Moon Base guide; Astrolab CLV-1 >6 mph; Lunar Outpost Pegasus >9 mph,med / assumed
+LTV delivered cost,$219-220M task order + ~$234M Blue Moon MK1 delivery = $450M,NASA release 26-046 (26 May 2026),high / derived
+Heavy hauler,"10,000 kg, 4 km/h, $600M, night-capable",'high capacity mobility' gap; Starship $100k/kg published price,assumed
+Small rover,"300 kg, 3 km/h, $60M",Lunar Outpost HL-MAPP 250 kg / 200 kg payload / 3 m/s,med / assumed
+Lander payloads,"CLPS 100-500 kg; MK1 2,000-3,000 kg; large 12,000-30,000 kg",CLPS task orders 0.07-0.475 t; Blue Moon MK1 3 t; MK2 20-30 t,high / med
+Offload delay,"6-24 h (CLPS), 12-36 h (MK1), 24-72 h (large)",modelling choice,assumed
+Dark share of cycle,0.15 default (about 106 h),Shackleton rim 90-94% lit (LROC); 120 h darkness survival target,med
+Night speed factor (night-capable),0.6,modelling choice,assumed
+Light-time RTT; processing,2.6 s; +2.4 s default,NTRS 20250000703; Mellinkoff et al. 2018,high / med
+Teleop speed model,"3.24 / 2.56 / 2.03 / 1.76 km/h at 0 / 4 / 6 / 8 s RTT, interpolated; move-and-wait beyond 8 s","Litaker et al., NASA TM-20240001217; Ferrell 1965",med
+Teleop handling factor,1 + 0.25 x RTT,"Seo, Gupta & Ham: 139% at 1.5 s, 174% at 3 s",med
+Fan-out,supervised 4; autonomous 20,Olsen & Wood 2004 (1-9); mining AHS up to 30,med
+MTBF / MTTR,"500/24 h (LTV), 400/36 h (hauler), 300/12 h (small)",set to 92-96% availability as in autonomous mining haulage; no rover MTBF published,assumed
+Other-duty share,0.3 in 48 h blocks,NASA LTV commercial-use clause; trade estimate of 25% commercial use,low
+Energy,350 / 900 / 120 Wh/km by class,"Apollo LRV-derived ~95 Wh/km at 700 kg, scaled",low
+Operator cost,"$1,000 per console hour","modelling choice; swept $200-$5,000",assumed
+Value of time by priority,"$5,000 / $1,000 / $100 per hour",modelling choice,assumed
+Wear share,0.5,modelling choice,assumed
+Return flow,30% of items; 20-60% of mass; 5-30 days later,trash and sample return are NextSTEP-2 Appendix R topics,assumed
+Bulk flows,"P1 30 t/yr; P2 500 t/yr; P3 1,500 t/yr","IPEx sized for 10 t regolith/day (NASA ASCEND 2024); swept 0-3,000",assumed
+Anticipation window and margin,48 h; arrive 1 h before first item,modelling choice,assumed
+Landed cost per kg,CLPS ~$1.08M (Blue Ghost M1); MK1 ~$78k if full; Starship $100k published,SpacePolicyOnline; NASA release 26-046; spacex.com,high / derived / med

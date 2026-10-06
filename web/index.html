@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LunarSim Live</title>
+<meta name="description" content="A verified discrete-event testbed for cargo movement at a south-pole Moon base: lander manifests, multi-owner rover fleets, the lunar night, Earth-Moon latency, and four dispatch rules including a pooled marketplace.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<style>
+/* Layout: a fixed topbar with brand, tabs and links; a 340px control rail; a fluid work area. The base-map replay is the hero of its tab. */
+:root {
+  --bg: #f4f4f0; --panel: #ffffff; --panel-2: #faf9f5; --ink: #141518; --ink2: #4b4d55; --muted: #7f828c; --line: #dddcd4; --line-2: #ecebe4;
+  --accent: #1c4f9c; --accent-ink: #ffffff; --accent-soft: #e2eaf7; --amber: #c77d05; --night: rgba(20, 24, 40, 0.14);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #4a3aa7; --s7: #008300; --s8: #e34948;
+  --good: #0ca30c; --warn: #fab219; --bad: #d03b3b; --shadow: 0 1px 2px rgba(20, 21, 24, 0.06), 0 6px 20px rgba(20, 21, 24, 0.05);
+  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "IBM Plex Mono", Consolas, Menlo, monospace; --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1116; --panel: #171a21; --panel-2: #1d2029; --ink: #f2f2ee; --ink2: #c2c3bd; --muted: #868991; --line: #2b2f39; --line-2: #232731;
+  --accent: #6aa5f5; --accent-ink: #0b1220; --accent-soft: #1b2b45; --amber: #f0a92e; --night: rgba(200, 210, 255, 0.10);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #9085e9; --s7: #2fa52f; --s8: #e66767;
+  --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1116; --panel: #171a21; --panel-2: #1d2029; --ink: #f2f2ee; --ink2: #c2c3bd; --muted: #868991; --line: #2b2f39; --line-2: #232731;
+  --accent: #6aa5f5; --accent-ink: #0b1220; --accent-soft: #1b2b45; --amber: #f0a92e; --night: rgba(200, 210, 255, 0.10);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #9085e9; --s7: #2fa52f; --s8: #e66767;
+  --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35); color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button:focus-visible, select:focus-visible, input:focus-visible, [role=tab]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* top bar */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: 0 1px 0 var(--line-2); }
+.topbar .in { max-width: 1480px; margin: 0 auto; padding-inline: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; min-height: 60px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .mark { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--accent), #0b2a57); position: relative; flex: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); }
+.brand .mark::after { content: ""; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #f4f4f0; right: 7px; top: 7px; box-shadow: -11px 13px 0 -3px rgba(244,244,240,0.55); }
+.brand h1 { font-family: var(--serif); font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -0.01em; line-height: 1.1; }
+.brand .tag { font-size: 11.5px; color: var(--muted); letter-spacing: 0.02em; }
+nav.tabs { display: flex; gap: 2px; justify-content: center; flex-wrap: wrap; }
+nav.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 18px 12px 16px; font: inherit; font-weight: 500; color: var(--ink2); cursor: pointer; }
+nav.tabs button:hover { color: var(--ink); }
+nav.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.links { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.links a { color: var(--ink2); padding: 6px 8px; border-radius: 6px; }
+.links a:hover { background: var(--panel-2); text-decoration: none; color: var(--ink); }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px; background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+.badge.pending { background: var(--accent-soft); color: var(--accent); } .badge.pending::before { background: var(--accent); }
+.icon-btn { background: none; border: 1px solid var(--line); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; color: var(--ink2); font-size: 14px; display: inline-grid; place-items: center; }
+.icon-btn:hover { background: var(--panel-2); }
+
+/* layout */
+.layout { max-width: 1480px; margin: 0 auto; padding: 20px 20px 56px; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; }
+@media (max-width: 980px) { .layout { grid-template-columns: 1fr; } nav.tabs button { padding: 12px 10px; } .topbar .in { grid-template-columns: 1fr; gap: 6px; } .links { justify-content: flex-start; } }
+.rail { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; box-shadow: var(--shadow); }
+.card h2 { font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+.card h3 { font-family: var(--serif); font-size: 17px; margin: 0 0 4px; font-weight: 600; letter-spacing: -0.005em; }
+.card .sub { font-size: 12.5px; color: var(--ink2); margin: 0 0 10px; max-width: 72ch; }
+label { display: block; font-size: 12.5px; color: var(--ink2); margin-bottom: 4px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: end; }
+.row > div { flex: 1 1 120px; min-width: 0; }
+select, input[type=number], input[type=text] { width: 100%; font: inherit; font-size: 13.5px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-2); color: var(--ink); }
+input[type=range] { width: 100%; accent-color: var(--accent); margin: 2px 0 10px; }
+.val { font-family: var(--mono); font-size: 12px; color: var(--ink); float: right; }
+.btn { border: 0; border-radius: 7px; padding: 9px 14px; font: inherit; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--accent-ink); }
+.btn.secondary { background: var(--panel); color: var(--accent); border: 1px solid var(--accent); font-weight: 500; }
+.btn.small { padding: 5px 9px; font-size: 12px; }
+.btn.ghost { background: transparent; color: var(--ink2); border: 1px solid var(--line); font-weight: 500; }
+.btn:disabled { opacity: 0.55; cursor: progress; }
+.fleet-list { display: flex; flex-direction: column; gap: 6px; }
+.veh { display: grid; grid-template-columns: 1fr 1fr 1.2fr auto; gap: 6px; align-items: center; }
+.veh select { padding: 5px 6px; font-size: 12.5px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--panel); box-shadow: var(--shadow); }
+.kpi .lab { font-size: 11.5px; color: var(--muted); letter-spacing: 0.02em; min-height: 30px; }
+.kpi .num { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; letter-spacing: -0.01em; }
+.kpi .ci { font-family: var(--mono); font-size: 11px; color: var(--ink2); margin-top: 2px; }
+.kpi.accent { border-color: var(--accent); }
+.chart { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink2); margin: 8px 0 0; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; background: var(--c); vertical-align: -1px; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; position: sticky; top: 0; background: var(--panel); }
+td.num, th.num { text-align: right; }
+tr.hl td { background: var(--accent-soft); }
+.scroll { overflow: auto; max-height: 420px; border: 1px solid var(--line-2); border-radius: 8px; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.pill.pass { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+.pill.fail { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+progress { width: 100%; height: 6px; accent-color: var(--accent); border-radius: 3px; }
+.status { font-size: 12px; color: var(--ink2); min-height: 18px; margin-top: 8px; font-family: var(--mono); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 10px; }
+.toolbar .spacer { flex: 1; }
+canvas#map { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
+.replay-controls { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; margin-top: 10px; }
+@media (max-width: 600px) { .replay-controls { grid-template-columns: 1fr 1fr; } }
+.clock { font-family: var(--mono); font-size: 13px; color: var(--ink2); white-space: nowrap; }
+.note { font-size: 12.5px; color: var(--ink2); }
+.prose { max-width: 76ch; }
+.prose p { margin: 0 0 10px; }
+.prose h3 { margin-top: 18px; }
+.prose code { font-family: var(--mono); font-size: 12.5px; background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+.hidden { display: none !important; }
+#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); padding: 6px 9px; border-radius: 6px; font-size: 12px; font-family: var(--mono); z-index: 50; opacity: 0; transition: opacity 0.08s; max-width: 280px; white-space: pre-line; }
+footer { max-width: 1480px; margin: 0 auto; padding: 0 20px 40px; font-size: 12px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="brand"><div class="mark" aria-hidden="true"></div><div><h1>LunarSim Live</h1><div class="tag">Lunar surface logistics testbed · v2.0</div></div></div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="run">Run</button>
+    <button role="tab" aria-selected="false" data-tab="compare">Compare rules</button>
+    <button role="tab" aria-selected="false" data-tab="replay">Replay a year</button>
+    <button role="tab" aria-selected="false" data-tab="verify">Verification</button>
+    <button role="tab" aria-selected="false" data-tab="about">Method</button>
+  </nav>
+  <div class="links">
+    <span class="badge pending" id="vbadge">verification not run</span>
+    <a href="https://github.com/azizjonrahimov/lunar-logistics-research" id="ghlink">GitHub</a>
+    <a href="https://github.com/azizjonrahimov/lunar-logistics-research/blob/main/paper/lunar_logistics_marketplace_paper_v2.pdf" id="paperlink">Paper</a>
+    <button class="icon-btn" id="theme" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+  </div>
+</div></header>
+
+<div id="tip" role="tooltip"></div>
+
+<div class="layout">
+<aside class="rail">
+  <section class="card">
+    <h2>Scenario</h2>
+    <div class="row">
+      <div><label for="phase">Demand phase</label>
+        <select id="phase">
+          <option value="P1">Phase 1 · pre-2029 · ~5 t/yr landed</option>
+          <option value="P2" selected>Phase 2 · 2029–32 · ~30 t/yr</option>
+          <option value="P3">Phase 3 · 2032+ · ~74 t/yr</option>
+        </select></div>
+      <div><label for="bulk">Bulk regolith flows (t/yr)</label><input id="bulk" type="number" min="0" max="5000" step="100" value="500"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div><label for="mech">Dispatch rule (Run tab)</label>
+        <select id="mech">
+          <option value="inhouse">In-house fleets (bilateral contracts)</option>
+          <option value="pooled_greedy">Pooled greedy</option>
+          <option value="central_assign">Batched assignment (Hungarian)</option>
+          <option value="marketplace" selected>Marketplace (auction, team lift, night-aware)</option>
+        </select></div>
+      <div><label for="seeds">Replications (seeds)</label><input id="seeds" type="number" min="1" max="500" value="10"></div>
+    </div>
+    <details style="margin-top:10px"><summary class="note">Marketplace components</summary>
+      <div class="row" style="margin-top:8px">
+        <label><input type="checkbox" id="c_bundling" checked> bundling</label>
+        <label><input type="checkbox" id="c_consolidate" checked> consolidation of bulk lots</label>
+        <label><input type="checkbox" id="c_team" checked> team lift</label>
+        <label><input type="checkbox" id="c_night" checked> night awareness</label>
+        <label><input type="checkbox" id="c_anticipate" checked> anticipatory staging</label>
+        <label><input type="checkbox" id="c_backhaul" checked> backhaul</label>
+        <label><input type="checkbox" id="c_priority" checked> priority credit</label>
+      </div>
+    </details>
+    <div class="toolbar" style="margin-top:10px">
+      <button class="btn ghost small" id="exportScenario" type="button">Export scenario JSON</button>
+      <label class="btn ghost small" for="importScenario" style="margin:0">Import JSON</label>
+      <input id="importScenario" type="file" accept="application/json" class="hidden">
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Fleet</h2>
+    <div class="row" style="margin-bottom:10px">
+      <div><label for="preset">Preset</label>
+        <select id="preset">
+          <option value="2">2 LTVs</option>
+          <option value="3">2 LTVs + small rover</option>
+          <option value="4" selected>2 LTVs + hauler + small rover</option>
+          <option value="5">3 LTVs + hauler + small rover</option>
+          <option value="6">Phase-2 default (6 vehicles)</option>
+          <option value="8">8 mixed vehicles</option>
+          <option value="9">Phase-3 default (9 vehicles)</option>
+        </select></div>
+      <div><button class="btn ghost small" id="addveh" type="button">+ vehicle</button></div>
+    </div>
+    <div class="fleet-list" id="fleet"></div>
+    <p class="note" style="margin:10px 0 0">LTV 1.5 t, 6 km/h, parks at night · HAUL 10 t, 4 km/h, works at night · MICRO 0.3 t, 3 km/h. Cargo is owned by NASA, CoA, CoB and CoC; in-house dispatch binds each owner to one carrier.</p>
+  </section>
+
+  <section class="card">
+    <h2>Environment</h2>
+    <label for="night">Dark share of the lunar cycle <span class="val" id="night_v">0.15</span></label>
+    <input id="night" type="range" min="0" max="0.5" step="0.05" value="0.15">
+    <label for="rtt">Round-trip control latency (s) <span class="val" id="rtt_v">5.0</span></label>
+    <input id="rtt" type="range" min="2.6" max="60" step="0.2" value="5.0">
+    <label for="ops">Earth operators on console <span class="val" id="ops_v">3</span></label>
+    <input id="ops" type="range" min="1" max="8" step="1" value="3">
+    <label for="duty">Vehicle time on owners' other duties <span class="val" id="duty_v">0.30</span></label>
+    <input id="duty" type="range" min="0" max="0.8" step="0.05" value="0.3">
+    <label for="mtbf">Reliability (MTBF multiplier) <span class="val" id="mtbf_v">1.0</span></label>
+    <input id="mtbf" type="range" min="0.25" max="4" step="0.25" value="1">
+    <label for="std">Cargo on the common interface standard <span class="val" id="std_v">1.00</span></label>
+    <input id="std" type="range" min="0.5" max="1" step="0.05" value="1">
+  </section>
+
+  <section class="card">
+    <button class="btn" id="run" type="button" style="width:100%">Run simulation</button>
+    <button class="btn secondary" id="runprec" type="button" style="width:100%; margin-top:8px">Run until the 99% CI is within 2%</button>
+    <progress id="prog" value="0" max="1" class="hidden" style="margin-top:10px"></progress>
+    <div class="status" id="status">Ready. One simulated year takes about 0.1–0.5 s per seed in a background worker.</div>
+  </section>
+</aside>
+
+<main style="min-width:0">
+  <section id="tab-run" class="tabpane">
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="card"><h3>Delay by cargo class</h3><p class="sub">Hours from release at the pad to delivery. Bars are means over the seeds; whiskers are 95% confidence intervals. Deferrable bulk lots are held on purpose under the marketplace.</p><svg class="chart" id="chart_delay" viewBox="0 0 560 250" role="img" aria-label="Delay by cargo class"></svg></div>
+      <div class="card"><h3>Items of the first seed</h3><p class="sub">Each dot is one delivered item at its release day and delay (log scale). Grey bands are nights, orange ticks are landings.</p><svg class="chart" id="chart_timeline" viewBox="0 0 560 250" role="img" aria-label="Delay timeline"></svg></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="toolbar"><h3 style="margin:0">Per-seed results</h3><span class="spacer"></span><button class="btn ghost small" id="exportRuns" type="button">Export CSV</button></div>
+      <div class="scroll"><table id="seedtable"></table></div>
+    </div>
+  </section>
+
+  <section id="tab-compare" class="tabpane hidden">
+    <div class="card">
+      <h3>All four dispatch rules on the same seeds</h3>
+      <p class="sub">Common random numbers: every rule sees the same landings, manifests and faults for a given seed, so the differences are paired. The comparison takes about four times as long as a single run.</p>
+      <div class="toolbar"><button class="btn" id="compare" type="button">Compare</button><span class="status" id="cstatus" style="margin:0"></span><span class="spacer"></span><button class="btn ghost small" id="exportCompare" type="button">Export CSV</button></div>
+    </div>
+    <div class="kpis" id="ckpis" style="margin-top:14px"></div>
+    <div class="grid2">
+      <div class="card"><h3>Urgent cargo: 90th-percentile delay (h)</h3><svg class="chart" id="chart_c1" viewBox="0 0 560 230" role="img"></svg></div>
+      <div class="card"><h3>Urgent cargo delivered within 24 h</h3><svg class="chart" id="chart_c2" viewBox="0 0 560 230" role="img"></svg></div>
+      <div class="card"><h3>Landed cargo mass that is immovable (%)</h3><svg class="chart" id="chart_c3" viewBox="0 0 560 230" role="img"></svg></div>
+      <div class="card"><h3>Vehicles caught by the night (per year)</h3><svg class="chart" id="chart_c4" viewBox="0 0 560 230" role="img"></svg></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>Table</h3><div class="scroll"><table id="ctable"></table></div></div>
+  </section>
+
+  <section id="tab-replay" class="tabpane hidden">
+    <div class="card">
+      <h3>One simulated year on the base map</h3>
+      <p class="sub">Replays the first seed of the last run. Vehicles move along the site graph; a ring around a site shows cargo waiting there; the shaded overlay is the lunar night. Filled markers are loaded vehicles; the label gives the load.</p>
+      <canvas id="map" width="1100" height="660"></canvas>
+      <div class="replay-controls">
+        <button class="btn secondary small" id="play" type="button">Play</button>
+        <input id="tslider" type="range" min="0" max="8760" step="1" value="0" aria-label="Simulated hour" style="margin:0">
+        <div class="clock" id="clock">day 0, 00:00</div>
+        <select id="speed" aria-label="Replay speed"><option value="6">6 h / s</option><option value="24" selected>1 day / s</option><option value="72">3 days / s</option><option value="240">10 days / s</option></select>
+      </div>
+      <div class="legend" id="maplegend"></div>
+      <div id="replaystats" class="note" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <section id="tab-verify" class="tabpane hidden">
+    <div class="card">
+      <h3>Verification checks</h3>
+      <p class="sub">Each check compares the simulator with an independent reference: an analytic formula, a published measurement or a conservation identity. The same checks run in the Python test-suite of the research repository.</p>
+      <div class="toolbar"><button class="btn" id="verify" type="button">Run checks</button><span class="status" id="vstatus" style="margin:0"></span></div>
+      <div class="scroll" style="margin-top:10px; max-height:none"><table id="vtable"></table></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Cross-implementation check</h3>
+      <p class="sub">Python reference results for the Phase-2 default fleet (30 seeds, from the paper's E1 suite) against this browser implementation on its own seeds. The two use different random-number generators, so agreement is statistical: means should lie within each other's 95% confidence intervals.</p>
+      <div class="toolbar"><button class="btn secondary" id="xcheck" type="button">Run the Phase-2 default cells (30 seeds × 4 rules)</button><span class="status" id="xstatus" style="margin:0"></span></div>
+      <div class="scroll" style="margin-top:10px; max-height:none"><table id="xtable"></table></div>
+    </div>
+  </section>
+
+  <section id="tab-about" class="tabpane hidden">
+    <div class="card prose">
+      <h3>What is simulated</h3>
+      <p>Landers arrive as Poisson processes (CLPS-class 100–500 kg, Blue Moon MK1-class 2–3 t, large landers 12–30 t) at one of two pads more than 1 km from the base. Each landing draws a manifest from five cargo classes with NASA's published mass ranges; items become available after an offload delay. Bulk regolith lots and return items (trash, samples) add recurring flows. Vehicles belong to owners and have a capacity, speed, night capability, autonomy level, fault process and other duties. Travel time follows the slope-weighted site graph; teleoperated speed follows NASA's JSC trial table (3.24, 2.56, 2.03, 1.76 km/h at 0, 4, 6, 8 s round trip).</p>
+      <h3>Dispatch rules</h3>
+      <p><b>In-house</b>: each cargo owner is served by one contracted carrier, oldest item first, nearest vehicle. <b>Pooled greedy</b>: any vehicle may serve any item. <b>Batched assignment</b>: every hour, a minimum-cost assignment of free vehicles to waiting items. <b>Marketplace</b>: a sequential single-item auction on generalised cost (vehicle wear, operator time and the shipper's value of delivery time, minus an urgency credit), with bundling of same-pad items, consolidation of bulk lots to a 70% load or 24 h, team lifts for items heavier than any one vehicle, backhaul of return items, refusal of jobs that would be caught by the night, and anticipatory staging of an idle vehicle at the pad before a published landing.</p>
+      <h3>Reading the numbers</h3>
+      <p>The primary metric is the 90th-percentile delay of urgent (priority-1) cargo and the share delivered within 24 h. <i>Immovable</i> mass is landed cargo heavier than any vehicle or team in the fleet. Costs are the fleet's amortised capital plus operator time, per kilogram of all mass moved, and per kilogram of landed cargo alone. Confidence intervals are 1.96 standard errors across seeds; the precision mode adds seeds until the 99% interval of the mean urgent delay is within 2% of the mean.</p>
+      <h3>Relation to the paper and the code</h3>
+      <p>This page is a line-by-line port of the Python package <code>lunarsim</code> used for the preprint <i>Who Hauls the Habitat?</i> The Verification tab runs the same analytic checks as the Python test-suite and compares the two implementations on the paper's Phase-2 cells. Scenarios can be exported as JSON and run from the command line with <code>lunarsim run --scenario file.json</code>. Parameters marked as assumptions in the paper (hauler cost, bulk flows, operator cost, value of time) are the defaults here and can be changed in the rail.</p>
+    </div>
+  </section>
+</main>
+</div>
+<footer>LunarSim · Roatify Research · MIT licence · The simulation runs entirely in your browser; nothing you enter leaves this page.</footer>
+
+<script src="ref.js"></script>
+<script src="sim.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

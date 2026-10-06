@@ -1,0 +1,13 @@
+common_share,mechanism,stranded_share,delay_prio1_p90_h,sl24_prio1,delivered_share
+0.5,inhouse,0.007,54.409,0.746,0.974
+0.5,marketplace,0.002,16.916,0.926,0.994
+0.5,pooled_greedy,0.007,21.769,0.91,0.993
+0.75,inhouse,0.007,48.413,0.777,0.974
+0.75,marketplace,0.002,16.816,0.898,0.997
+0.75,pooled_greedy,0.007,16.334,0.929,0.993
+0.9,inhouse,0.007,45.113,0.803,0.974
+0.9,marketplace,0.002,16.709,0.903,0.997
+0.9,pooled_greedy,0.007,15.536,0.932,0.993
+1.0,inhouse,0.007,45.605,0.805,0.974
+1.0,marketplace,0.002,16.002,0.915,0.997
+1.0,pooled_greedy,0.007,14.54,0.936,0.993

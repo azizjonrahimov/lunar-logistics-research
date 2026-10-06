@@ -1,0 +1,61 @@
+@page { size: Letter; margin: 22mm 20mm 22mm 20mm; }
+:root {
+  --ink: #111; --ink2: #444; --muted: #777; --rule: #d9d9d9; --accent: #1c5cab; --bg: #fff;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body {
+  font-family: "Times New Roman", Times, "Liberation Serif", serif;
+  font-size: 10.6pt; line-height: 1.42; max-width: 172mm; margin: 0 auto; padding: 0 12px;
+}
+h1 { font-size: 19pt; line-height: 1.2; margin: 0 0 6px 0; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 13pt; margin: 22px 0 8px 0; font-weight: 700; break-after: avoid; }
+h3 { font-size: 11pt; margin: 16px 0 6px 0; font-weight: 700; break-after: avoid; }
+h4 { font-size: 10.6pt; margin: 12px 0 4px 0; font-weight: 700; font-style: italic; }
+p { margin: 0 0 8px 0; text-align: justify; hyphens: auto; }
+.authors { font-size: 11pt; margin: 4px 0 2px 0; }
+.affil { font-size: 9.5pt; color: var(--ink2); margin-bottom: 14px; }
+.abstract { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 10px 14px; margin: 14px 0 18px 0; font-size: 10pt; }
+.abstract p { text-align: justify; }
+.abstract .kw { color: var(--ink2); font-size: 9.3pt; margin-top: 6px; }
+figure { margin: 14px 0 16px 0; break-inside: avoid; }
+figure img { width: 100%; display: block; }
+figure.narrow img { width: 78%; margin: 0 auto; }
+figure.mid img { width: 92%; margin: 0 auto; }
+figcaption { font-size: 9.2pt; color: var(--ink2); margin-top: 6px; text-align: justify; line-height: 1.35; }
+figcaption b, .tabcap b { color: var(--ink); }
+table { border-collapse: collapse; width: 100%; font-size: 8.8pt; margin: 6px 0 14px 0; break-inside: avoid; }
+th, td { padding: 3px 5px; border-bottom: 1px solid var(--rule); vertical-align: top; text-align: left; }
+th { border-bottom: 1.5px solid #999; font-weight: 700; background: #fafaf8; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.best td { font-weight: 700; }
+.tabcap { font-size: 9.2pt; color: var(--ink2); margin: 10px 0 4px 0; text-align: justify; }
+.eq { margin: 8px 0 10px 24px; font-family: "Times New Roman", Times, serif; }
+.eq .no { float: right; color: var(--ink2); }
+.algo { border: 1px solid var(--rule); background: #fbfbf9; padding: 8px 12px; font-size: 9.2pt; margin: 10px 0 14px 0; break-inside: avoid; }
+.algo .title { font-weight: 700; margin-bottom: 4px; }
+.algo ol { margin: 0; padding-left: 20px; }
+.algo li { margin: 1px 0; }
+code, .mono { font-family: "Consolas", "Menlo", monospace; font-size: 9pt; }
+.note { font-size: 9.3pt; color: var(--ink2); }
+.refs { font-size: 9pt; }
+.refs p { text-indent: -18px; padding-left: 18px; margin-bottom: 4px; text-align: left; }
+.refs a, a { color: var(--accent); text-decoration: none; word-break: break-all; }
+.contrib li { margin-bottom: 4px; }
+ul, ol { margin: 4px 0 8px 0; }
+li { margin-bottom: 2px; }
+.pagebreak { break-before: page; }
+.small { font-size: 9pt; }
+.appendix h2 { font-size: 12pt; }
+.toc { font-size: 9.2pt; color: var(--ink2); columns: 2; margin: 8px 0 14px 0; }
+.box { border-left: 3px solid var(--accent); padding: 4px 10px; background: #f6f8fb; margin: 8px 0 12px 0; font-size: 9.6pt; }
+@media screen { body { padding: 30px 12px 60px 12px; } }
+table.wide { font-size: 7.3pt; }
+table.wide th, table.wide td { padding: 2px 3px; }
+h1, h2, h3, h4, .authors, .affil, figcaption, .tabcap, table, .refs, .abstract { font-family: "Times New Roman", Times, "Liberation Serif", serif; }
+code, .mono { font-family: "Courier New", Consolas, monospace; font-size: 9.2pt; }
+
+.appendix table { break-inside: auto; }
+.appendix tr { break-inside: avoid; }
+.tabcap { break-after: avoid; }
+table.small { break-inside: auto; }
+table.small tr { break-inside: avoid; }

@@ -1,0 +1,4 @@
+name,capacity_kg,speed_kmh,empty_speed_mult,energy_wh_per_km,battery_wh,charge_kw,night_ops,can_team_lift,unit_cost_musd,life_hours,mtbf_h,mttr_h,load_h,unload_h,life_years
+LTV,1500,6.0,1.2,350,40000,5.0,False,True,450.0,21900.0,500,24,0.5,0.5,10.0
+HAUL,10000,4.0,1.2,900,120000,10.0,True,True,600.0,21900.0,400,36,1.5,1.5,10.0
+MICRO,300,3.0,1.3,120,8000,1.0,False,False,60.0,10950.0,300,12,0.3,0.3,5.0
