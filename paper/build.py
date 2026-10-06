@@ -118,14 +118,20 @@ def table_e14():
     out.append("</table>")
     reached = [m for m in d if d[m]["delay_prio1_mean_h"]["reached"]]
     not_reached = [m for m in d if not d[m]["delay_prio1_mean_h"]["reached"]]
+    def join(items):
+        items = list(items)
+        return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+    def low(m):
+        return MECH_LABEL[m].lower().replace(" (ours)", "")
     parts = []
     if reached:
-        parts.append("An extended run continued the " + " and ".join(MECH_LABEL[m].lower() for m in reached) + " cell"
-                     + ("s" if len(reached) > 1 else "") + " to the 1% target, which was reached after "
-                     + ", ".join(f"{d[m]['delay_prio1_mean_h']['n']:,} replications" for m in reached)
-                     + f" (half-width {', '.join(f'{100*d[m]['delay_prio1_mean_h']['rel_half_width']:.2f}%' for m in reached)}).")
+        head = "all four cells" if len(reached) == 4 else "the " + join(low(m) for m in reached) + (" cells" if len(reached) > 1 else " cell")
+        every = all(d[m][k]["reached"] for m in reached for k in d[m])
+        parts.append("An extended run without the cap continued " + head + " to the 1% target on the mean urgent delay, which was reached after "
+                     + join(f"{d[m]['delay_prio1_mean_h']['n']:,} ({low(m)})" for m in reached) + " replications"
+                     + (", with every other metric inside its target at those counts." if every else "."))
     if not_reached:
-        parts.append("The extended run for the " + ", ".join(MECH_LABEL[m].lower() for m in not_reached)
+        parts.append("The extended run for the " + join(low(m) for m in not_reached)
                      + " cells was interrupted by a memory limit on the workstation before it reached that target, so their estimates stand at "
                      + ", ".join(f"{d[m]['delay_prio1_mean_h']['n']:,}" for m in not_reached) + " replications with half-widths of "
                      + ", ".join(f"{100*d[m]['delay_prio1_mean_h']['rel_half_width']:.1f}%" for m in not_reached)

@@ -23,3 +23,8 @@ packages = ["lunarsim"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[project.urls]
+Homepage = "https://azizjonrahimov.github.io/lunar-logistics-research/"
+Repository = "https://github.com/azizjonrahimov/lunar-logistics-research"
+Paper = "https://github.com/azizjonrahimov/lunar-logistics-research/blob/main/paper/lunar_logistics_marketplace_paper_v2.pdf"
