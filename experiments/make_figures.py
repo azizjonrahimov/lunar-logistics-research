@@ -716,6 +716,9 @@ def fig_anticipation():
 # ---------------------------------------------------------------------------
 def fig_precision():
     d = json.load(open(os.path.join(RES, "E14_precision.json")))
+    p_long = os.path.join(RES, "E14_precision_long.json")
+    if os.path.exists(p_long):
+        d.update(json.load(open(p_long)))   # extended runs replace the 4,000-replication runs where they exist
     fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.2))
     fig.subplots_adjust(wspace=0.3)
     for ax, (m, title) in zip(axes, [("delay_prio1_mean_h", "A. Mean urgent delay"), ("delay_prio1_p90_h", "B. Urgent 90th-percentile delay")]):
